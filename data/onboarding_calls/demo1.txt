@@ -1,9 +1,0 @@
-This is the onboarding call.
-
-The company confirmed they operate 24 hours.
-
-If transfer fails after 60 seconds dispatch must be notified.
-
-Never create sprinkler jobs in ServiceTrade.
-
-Our office hours are 8am to 6pm Monday through Friday.
