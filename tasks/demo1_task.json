@@ -1,0 +1,7 @@
+{
+    "account_id": "demo1",
+    "task_name": "Review AI Agent Configuration",
+    "description": "Verify generated agent spec and account memo.",
+    "status": "pending",
+    "priority": "medium"
+}

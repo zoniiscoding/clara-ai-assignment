@@ -1,0 +1,43 @@
+{
+    "account_id": "demo1",
+    "company_name": "Unknown Company",
+    "business_hours": {
+        "days": "unknown",
+        "start": "unknown",
+        "end": "unknown",
+        "timezone": "unknown"
+    },
+    "office_address": "",
+    "services_supported": [
+        "installation services",
+        "electrical troubleshooting",
+        "electrical renovations",
+        "residential electrical work",
+        "hot tub electrical hookup",
+        "commercial electrical work",
+        "maintenance services",
+        "electrical panel upgrades",
+        "EV charger installation"
+    ],
+    "emergency_definition": [
+        "general emergency service",
+        "gas station pump failures"
+    ],
+    "emergency_routing_rules": [],
+    "non_emergency_routing_rules": [],
+    "call_transfer_rules": {
+        "timeout_seconds": 20,
+        "retry_attempts": 1,
+        "fallback_message": "We could not reach dispatch. Someone will call you back shortly."
+    },
+    "integration_constraints": [],
+    "after_hours_flow_summary": "",
+    "office_hours_flow_summary": "",
+    "questions_or_unknowns": [
+        "Exact business hours",
+        "Service area coverage",
+        "Pricing structure",
+        "Dispatch workflow"
+    ],
+    "notes": ""
+}
