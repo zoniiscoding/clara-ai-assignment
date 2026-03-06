@@ -1,48 +1,51 @@
-# Clara AI Intern Assignment
-## Zero-Cost Automation Pipeline: Demo Call → Retell Agent Draft → Onboarding Update → Agent Revision
+# Clara AI Automation Pipeline
+### Demo Call → AI Agent Draft → Onboarding Update → Agent Revision
 
-## Overview
+This project implements a **fully automated, zero-cost pipeline** that converts demo call transcripts into structured AI receptionist configurations and automatically updates those agents after onboarding calls.
 
-This project implements an automated pipeline that converts demo call transcripts into structured AI phone agent configurations and updates those agents after onboarding calls.
+The system demonstrates an end-to-end workflow including:
 
-The system processes transcripts to:
+- transcript processing
+- structured data extraction
+- AI agent configuration generation
+- onboarding updates
+- version control of agent configurations
+- diff tracking
+- review task creation
+- operational metrics
+- monitoring dashboard
 
-1. Extract structured business information
-2. Generate a preliminary AI receptionist configuration
-3. Store versioned artifacts per account
-4. Update agent configurations after onboarding
-5. Track changes between versions
-6. Generate operational metrics and review tasks
-
-The entire system runs using **zero-cost tools**, satisfying the assignment constraint that no paid APIs or subscriptions may be used.
+The pipeline is designed to run locally with **no paid APIs or services**, satisfying the assignment constraint of a **zero-cost architecture**.
 
 ---
 
-# Architecture
+# System Overview
 
-The pipeline is divided into two stages.
+The pipeline automates the lifecycle of an AI phone receptionist.
 
-## Pipeline A — Demo Call → Preliminary Agent
+Demo Call → Extract Business Data → Generate Agent → Onboarding Update → Revise Agent → Track Changes
+
+Two automated pipelines are implemented.
+
+---
+
+# Pipeline A  
+## Demo Call → Preliminary Agent
 
 Input:
+
 Demo call transcript
 
-Output:
-- Structured Account Memo JSON
-- Retell Agent Draft Specification
-- Stored versioned artifacts
-- Automatically generated review task
-
-Process:
+Processing steps:
 
 1. Transcript ingestion
 2. Information extraction using rule-based NLP
 3. Structured account memo generation
-4. Agent configuration generation
+4. AI agent configuration generation
 5. Artifact storage
-6. Task creation for agent review
+6. Automatic review task creation
 
-Artifacts generated:
+Outputs:
 
 ```
 outputs/accounts/<account_id>/v1/
@@ -50,40 +53,44 @@ outputs/accounts/<account_id>/v1/
     agent_spec.json
 ```
 
+These files represent the **initial AI agent configuration generated from the demo call**.
+
 ---
 
-## Pipeline B — Onboarding Call → Agent Update
+# Pipeline B  
+## Onboarding Call → Agent Update
 
 Input:
+
 Onboarding call transcript
 
-Output:
-- Updated account memo
-- Updated agent configuration
-- Versioned change history
-- Diff report between versions
-
-Process:
+Processing steps:
 
 1. Onboarding transcript ingestion
-2. Extraction of updated business details
-3. Patch applied to existing account memo
-4. Regeneration of agent configuration
-5. Version increment (v1 → v2)
+2. Detection of updated business information
+3. Patch applied to the existing account memo
+4. Regeneration of the AI agent configuration
+5. Version update (v1 → v2)
 6. Diff generation
-7. Change log creation
+7. Changelog creation
 
-Artifacts generated:
+Outputs:
 
 ```
 outputs/accounts/<account_id>/v2/
     account_memo.json
     agent_spec.json
+```
 
+Additional artifacts:
+
+```
 outputs/accounts/<account_id>/
     diff.json
     changes.md
 ```
+
+These files show **exactly what changed between agent versions**.
 
 ---
 
@@ -104,9 +111,6 @@ outputs/
             diff.json
             changes.md
 
-logs/
-    pipeline.log
-
 scripts/
     extract_demo.py
     generate_agent.py
@@ -118,6 +122,9 @@ scripts/
 tasks/
     <account_id>_task.json
 
+logs/
+    pipeline.log
+
 dashboard.py
 run_pipeline.py
 README.md
@@ -125,25 +132,25 @@ README.md
 
 ---
 
-# Key Components
+# Core Components
 
 ## Transcript Extraction
 
-The extraction layer converts unstructured transcript text into structured business data including:
+Demo call transcripts are converted into structured business data including:
 
 - services supported
 - emergency triggers
 - business hours
 - routing rules
-- operational constraints
+- integration constraints
 
-This is implemented using **rule-based NLP**, ensuring:
+Extraction uses **rule-based natural language processing** to ensure:
 
+- deterministic results
 - zero API cost
-- deterministic behavior
-- no hallucinated information
+- no hallucinated data
 
-Missing data is explicitly flagged in:
+If information is missing it is flagged in:
 
 ```
 questions_or_unknowns
@@ -153,14 +160,15 @@ questions_or_unknowns
 
 ## Agent Configuration Generation
 
-The pipeline generates a **Retell Agent Draft Specification** including:
+The system generates a **Retell Agent Draft Specification** including:
 
 - agent name
-- voice style
 - system prompt
+- voice style
 - routing variables
-- transfer protocol
-- fallback protocol
+- emergency definitions
+- call transfer protocol
+- fallback behavior
 
 Example fields:
 
@@ -172,35 +180,33 @@ call_transfer_protocol
 fallback_protocol
 ```
 
-This specification can be directly used to configure a Retell AI phone agent.
+This configuration represents how the agent would be deployed in Retell.
 
 ---
 
 ## Versioning System
 
-Each account maintains versioned agent artifacts.
+Each account maintains **versioned agent artifacts**.
 
 ```
 v1 → generated from demo call
 v2 → updated from onboarding call
 ```
 
-Changes between versions are recorded using:
+Changes are tracked using:
 
 ```
 diff.json
 changes.md
 ```
 
-This enables clear traceability of agent modifications.
+This provides clear traceability of how the agent evolves.
 
 ---
 
-## Task Tracking
+## Task Tracking (Mock Asana Integration)
 
-The pipeline automatically generates a review task for each generated agent configuration.
-
-Because paid APIs were not allowed under the zero-cost constraint, this project implements a **mock task tracker** using JSON files stored in the `/tasks` directory.
+After generating an agent configuration, the pipeline automatically creates a **review task**.
 
 Example:
 
@@ -208,21 +214,21 @@ Example:
 tasks/demo1_task.json
 ```
 
-Each task represents a review item that would normally be created in tools like Asana.
+Because paid APIs were not allowed under the assignment constraints, this project implements a **mock task tracker** using JSON files.
+
+Each task represents a review item that would normally be created in a task management system such as Asana.
 
 ---
 
 ## Logging
 
-The pipeline logs all processing steps for traceability.
-
-Logs are stored in:
+Pipeline operations are logged to:
 
 ```
 logs/pipeline.log
 ```
 
-Example log events:
+Example logged events:
 
 - transcript processing
 - agent generation
@@ -230,11 +236,13 @@ Example log events:
 - diff creation
 - pipeline metrics
 
+This improves observability and debugging.
+
 ---
 
 ## Metrics
 
-The system generates summary metrics after pipeline execution.
+The pipeline generates summary metrics after execution.
 
 Example metrics:
 
@@ -244,13 +252,19 @@ total_services_detected
 total_emergency_triggers
 ```
 
-These metrics help evaluate extraction performance across datasets.
+Metrics are generated by:
+
+```
+scripts/metrics.py
+```
+
+and printed after pipeline completion.
 
 ---
 
 ## Dashboard (Bonus Feature)
 
-A lightweight Streamlit dashboard is included to visualize pipeline results.
+A lightweight monitoring dashboard was implemented using Streamlit.
 
 The dashboard displays:
 
@@ -269,23 +283,14 @@ py -m streamlit run dashboard.py
 
 # Running the Pipeline
 
-## Step 1 — Add transcripts
-
-Place demo transcripts in:
+Step 1 — Add transcripts
 
 ```
 data/demo_calls/
-```
-
-Place onboarding transcripts in:
-
-```
 data/onboarding_calls/
 ```
 
----
-
-## Step 2 — Run pipeline
+Step 2 — Run the pipeline
 
 ```
 py run_pipeline.py
@@ -293,16 +298,16 @@ py run_pipeline.py
 
 This executes:
 
-1. Demo extraction
-2. Agent generation
-3. Task creation
-4. Onboarding updates
-5. Version diff generation
-6. Metrics calculation
+1. demo transcript extraction
+2. agent generation
+3. task creation
+4. onboarding updates
+5. diff generation
+6. metrics calculation
 
 ---
 
-## Example Output
+# Example Output
 
 ```
 outputs/accounts/demo1/
@@ -321,11 +326,9 @@ changes.md
 
 ---
 
-# Zero-Cost Design
+# Zero-Cost Architecture
 
-The project intentionally avoids paid APIs or services.
-
-Design choices:
+The system intentionally avoids paid APIs.
 
 | Requirement | Implementation |
 |-------------|---------------|
@@ -335,7 +338,7 @@ Design choices:
 | Orchestration | Python scripts |
 | Dashboard | Streamlit (free) |
 
-This ensures the system is fully reproducible with no external dependencies.
+This ensures the pipeline can run on **any machine with no external dependencies**.
 
 ---
 
@@ -343,9 +346,9 @@ This ensures the system is fully reproducible with no external dependencies.
 
 The pipeline is designed to be **idempotent**.
 
-Running the pipeline multiple times will not duplicate artifacts or corrupt existing outputs.
+Running the pipeline multiple times will not duplicate artifacts or corrupt outputs.
 
-Existing accounts are skipped if already processed.
+Previously processed accounts are automatically skipped.
 
 ---
 
@@ -354,8 +357,8 @@ Existing accounts are skipped if already processed.
 Current limitations include:
 
 - rule-based extraction may miss uncommon phrasing
-- service detection uses keyword matching
-- routing rules require transcript mentions
+- service detection relies on keyword matching
+- routing rules require explicit transcript mentions
 
 These trade-offs were chosen to maintain the **zero-cost constraint**.
 
@@ -363,36 +366,36 @@ These trade-offs were chosen to maintain the **zero-cost constraint**.
 
 # Future Improvements
 
-With production resources the system could be improved using:
+With production resources the system could be extended with:
 
 - local open-source LLM extraction
-- automated speech-to-text transcription
+- speech-to-text transcription
 - direct Retell API integration
-- real task management integration (Asana / Jira)
+- real task management integration
 - improved entity recognition
 
 ---
 
 # Demonstration
 
-The project includes a Loom demo showing:
+The accompanying Loom video demonstrates:
 
 1. pipeline execution
 2. generated outputs
-3. agent version update
+3. agent version updates
 4. diff visualization
 
 ---
 
 # Summary
 
-This project demonstrates a fully automated pipeline that:
+This project implements a fully automated workflow that:
 
-- converts demo calls into AI phone agent configurations
-- updates agents based on onboarding calls
+- converts demo calls into AI receptionist configurations
+- updates agents after onboarding calls
 - tracks changes across versions
 - generates operational metrics
 - creates review tasks
-- runs entirely with zero cost tools
+- runs entirely with zero-cost tools
 
-The system is modular, reproducible, and designed to resemble a small production workflow.
+The system is modular, reproducible, and designed to resemble a **small production automation pipeline**.
