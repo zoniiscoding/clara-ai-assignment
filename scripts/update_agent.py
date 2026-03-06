@@ -36,23 +36,26 @@ def update_memo(v1_memo, onboarding_text):
 
     updated = v1_memo.copy()
 
-    hours = extract_business_hours(onboarding_text)
+    hours_text = extract_business_hours(onboarding_text)
 
-    if hours:
+    if hours_text:
 
-     if "to" in hours:
-        start, end = hours.split("to")
-     elif "-" in hours:
-        start, end = hours.split("-")
-     else:
-        start = hours
-        end = hours
+        if "to" in hours_text:
+            parts = hours_text.split("to")
+        elif "-" in hours_text:
+            parts = hours_text.split("-")
+        else:
+            parts = []
 
-    updated["business_hours"]["start"] = start.strip()
-    updated["business_hours"]["end"] = end.strip()
+        if len(parts) == 2:
+            start = parts[0].strip()
+            end = parts[1].strip()
 
-    if "Exact business hours" in updated["questions_or_unknowns"]:
-        updated["questions_or_unknowns"].remove("Exact business hours")
+            updated["business_hours"]["start"] = start
+            updated["business_hours"]["end"] = end
+
+            if "Exact business hours" in updated["questions_or_unknowns"]:
+                updated["questions_or_unknowns"].remove("Exact business hours")
 
     return updated
 
@@ -165,6 +168,7 @@ def process_onboarding():
             f.write("Updated fields:\n")
             f.write("- business_hours\n")
 
+        logging.info(f"Updated account {account_id} from v1 to v2")
         print(f"Updated account {account_id} to v2")
 
 

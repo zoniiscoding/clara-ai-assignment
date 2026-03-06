@@ -1,11 +1,16 @@
 import os
 import json
 import logging
+import re
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Ensure logs folder exists
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
 logging.basicConfig(
-    filename=os.path.join(BASE_DIR, "logs", "pipeline.log"),
+    filename=os.path.join(LOG_DIR, "pipeline.log"),
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -21,7 +26,10 @@ def extract_info(transcript_text, account_id):
     services = []
     emergency = []
 
-    # Electrical-related services
+    # -------------------------------
+    # Service detection
+    # -------------------------------
+
     if "ev charger" in text:
         services.append("EV charger installation")
 
@@ -43,7 +51,8 @@ def extract_info(transcript_text, account_id):
     if "residential" in text:
         services.append("residential electrical work")
 
-    # General service keywords
+    # Generic service keywords (works across industries)
+
     if "install" in text:
         services.append("installation services")
 
@@ -53,45 +62,115 @@ def extract_info(transcript_text, account_id):
     if "maintenance" in text:
         services.append("maintenance services")
 
+    # Fallback
+    if not services:
+        services.append("general service work")
+
+    # -------------------------------
     # Emergency detection
+    # -------------------------------
+
     if "gas station" in text or "pump" in text:
         emergency.append("gas station pump failures")
 
     if "emergency" in text:
         emergency.append("general emergency service")
 
-    # Fallback
-    if not services:
-        services.append("general service work")
+    # -------------------------------
+    # Business hours detection
+    # -------------------------------
+
+    business_hours = {
+        "days": "unknown",
+        "start": "unknown",
+        "end": "unknown",
+        "timezone": "unknown"
+    }
+
+    hours_match = re.search(
+        r"\b\d{1,2}\s?(am|pm)\s?(to|-)\s?\d{1,2}\s?(am|pm)\b", text
+    )
+
+    if hours_match:
+        hours_text = hours_match.group()
+
+        if "to" in hours_text:
+            start, end = hours_text.split("to")
+        else:
+            start, end = hours_text.split("-")
+
+        business_hours["start"] = start.strip()
+        business_hours["end"] = end.strip()
+
+    # -------------------------------
+    # Company name detection
+    # -------------------------------
+
+    company_name = "Unknown Company"
+
+    name_match = re.search(
+        r"([A-Z][a-z]+(?:\s[A-Z][a-z]+)*\s(?:Electric|Electrical|Services|Solutions))",
+        transcript_text
+    )
+
+    if name_match:
+        company_name = name_match.group()
+
+    # -------------------------------
+    # Address detection
+    # -------------------------------
+
+    office_address = ""
+
+    address_match = re.search(
+        r"\d+\s[A-Za-z]+\s(?:Street|St|Road|Rd|Avenue|Ave)",
+        transcript_text
+    )
+
+    if address_match:
+        office_address = address_match.group()
+
+    # -------------------------------
+    # Account memo
+    # -------------------------------
 
     account_memo = {
+
         "account_id": account_id,
-        "company_name": "Unknown Company",
-        "business_hours": {
-            "days": "unknown",
-            "start": "unknown",
-            "end": "unknown",
-            "timezone": "unknown"
-        },
-        "office_address": "",
+
+        "company_name": company_name,
+
+        "business_hours": business_hours,
+
+        "office_address": office_address,
+
         "services_supported": list(set(services)),
+
         "emergency_definition": list(set(emergency)),
+
         "emergency_routing_rules": [],
+
         "non_emergency_routing_rules": [],
+
         "call_transfer_rules": {
             "timeout_seconds": 20,
             "retry_attempts": 1,
             "fallback_message": "We could not reach dispatch. Someone will call you back shortly."
         },
+
         "integration_constraints": [],
+
         "after_hours_flow_summary": "",
+
         "office_hours_flow_summary": "",
+
         "questions_or_unknowns": [
             "Exact business hours",
             "Service area coverage",
             "Pricing structure",
             "Dispatch workflow"
         ],
+
         "notes": ""
     }
 
@@ -107,12 +186,12 @@ def process_demo_calls():
         if not file.endswith(".txt"):
             continue
 
-        with open(os.path.join(INPUT_FOLDER, file), "r", encoding="utf-8") as f:
+        filepath = os.path.join(INPUT_FOLDER, file)
+
+        with open(filepath, "r", encoding="utf-8") as f:
             transcript = f.read()
 
         account_id = file.replace(".txt", "")
-
-        extracted = extract_info(transcript, account_id)
 
         account_folder = os.path.join(OUTPUT_FOLDER, account_id, "v1")
         memo_path = os.path.join(account_folder, "account_memo.json")
@@ -124,6 +203,8 @@ def process_demo_calls():
             continue
 
         os.makedirs(account_folder, exist_ok=True)
+
+        extracted = extract_info(transcript, account_id)
 
         with open(memo_path, "w", encoding="utf-8") as f:
             json.dump(extracted, f, indent=4)

@@ -3,3 +3,8 @@ __pycache__/
 logs/pipeline.log
 .env
 .DS_Store
+data/demo_calls/*.txt
+data/onboarding_calls/*.txt
+logs/
+__pycache__/
+*.pyc

@@ -1,28 +1,17 @@
 {
-    "account_id": "demo1",
-    "company_name": "Electric Solutions",
+    "account_id": "PLACEHOLDER",
+    "company_name": "Unknown Company",
     "business_hours": {
         "days": "unknown",
         "start": "unknown",
         "end": "unknown",
         "timezone": "unknown"
     },
-    "office_address": "17119 Sundown Road",
+    "office_address": "",
     "services_supported": [
-        "electrical panel upgrades",
-        "EV charger installation",
-        "electrical troubleshooting",
-        "electrical renovations",
-        "hot tub electrical hookup",
-        "residential electrical work",
-        "commercial electrical work",
-        "maintenance services",
-        "installation services"
+        "general service work"
     ],
-    "emergency_definition": [
-        "general emergency service",
-        "gas station pump failures"
-    ],
+    "emergency_definition": [],
     "emergency_routing_rules": [],
     "non_emergency_routing_rules": [],
     "call_transfer_rules": {
